@@ -83,9 +83,9 @@ size_t power(size_t base, size_t expo) {
   return result;
 }
 
-char* pruneIdentifier(const char*num) {
-  char* p = num; // To make sure num doesnt change
-  switch (*p) {
+// Would be nice if num could be const
+char* pruneIdentifier(char*num) {
+  switch (*num) {
     case '0':
     case 'x':
     case 'X':
@@ -93,12 +93,12 @@ char* pruneIdentifier(const char*num) {
     case 'B':
     case 'o':
     case 'O':
-      return pruneIdentifier(p+1);
-    default: return p;
+      return pruneIdentifier(num+1);
+    default: return num;
   }
 }
 
-size_t handleBase(Error *err, const char *num, int base) {
+size_t handleBase(Error *err, char *num, int base) {
   num = pruneIdentifier(num);
   size_t dim = strLen(num);
   size_t result = 0;
@@ -181,6 +181,8 @@ int main (int argc, char *argv[]){
   }
 
   switch (flag(&err, argc, argv)) {
+    // #TODO 1 triggers when no flag is inputed so this should be smarter
+    case 1:
     case 10:
       printf("Result in decimal: %lu\n", result);
       return 0;
@@ -192,8 +194,6 @@ int main (int argc, char *argv[]){
       return 0;
     case 8:
       printf("Result in octal: 0%o\n", result); // idk if it is %o
-      return 0;
-    case 1:
       return 0;
     case -1:
       printHelp(argv[0]);
