@@ -153,14 +153,24 @@ int flag(Error *err, int argc, char* argv[]){
     case 'x': return 16;
     case 'b': return 2;
     case 'o': return 8;
+    case 'h': return -1;
     default: return 0;
   }
+}
+const char* usageString = "Usage: %s 0x/0b/0o + NUMBER [-b] [-x] [-d] [-o]\n";
+void printHelp(char* name) {
+  printf(usageString, name);
+  printf("\n-b to output to binary\n") ;
+  printf("-d to output to decimal\n") ;
+  printf("-x to output to hexadecimal\n") ;
+  printf("-o to output to octal\n") ;
+  printf("-h to show this page\n");
 }
 
 int main (int argc, char *argv[]){
   Error err = OK;
   if (argc < 2 || argc > 3) {
-    printf("Usage: %s 0x/0b + NUMBER [-b] [-x] [-d] [-o]\n", argv[0]);
+    printf(usageString, argv[0]);
     return 1;
   }
   size_t result = baseChange(&err, argv[1]);
@@ -184,6 +194,9 @@ int main (int argc, char *argv[]){
       printf("Result in octal: 0%o\n", result); // idk if it is %o
       return 0;
     case 1:
+      return 0;
+    case -1:
+      printHelp(argv[0]);
       return 0;
     default:
       handleError(err);
