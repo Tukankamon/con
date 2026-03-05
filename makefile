@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall
-TARGET = bin/main
+TARGET = bin/con
 SRC = main.c
 
 build:
