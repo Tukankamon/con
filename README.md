@@ -37,3 +37,8 @@ environment.systemPackages = [
 ];
 ```
 Hash might be different
+
+# Todo
+- [ ] Add unit tests
+- [ ] Allow for arbitrary bases
+- [ ] Support other conversions
