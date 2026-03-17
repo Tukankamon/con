@@ -29,11 +29,13 @@ fn char_to_int(c: char) -> Option<u128> {
     }
 }
 
-fn exp(mut base: u128, exp: u128) -> u128 {
+fn exp(base: u128, exp: u128) -> u128 {
+    let mut result = base;
+    if exp == 0 { return 1 }
     for _ in 1..exp {
-        base *= base;
+        result *= base;
     }
-    return base
+    return result
 }
 
 fn parse_num(mut num: String) -> Option<u128> {
@@ -52,19 +54,51 @@ fn parse_num(mut num: String) -> Option<u128> {
         let bit = char_to_int(char);
         match bit {
             None => return None,
-            Some(i) => counter += i * exp(base, exponent),
+            Some(i) => {
+                if i>base-1 { return None };
+                counter += i * exp(base, exponent);
+            },
         }
         exponent+= 1;
     }
     return Some(counter)
+}
 
+fn print_num(num: String, base: Option<String>) {
+    let new_base;
+    match base {
+        None => new_base = Some(10),
+        Some(i) => new_base = parse_num(i),
+    }
+    match parse_num(num) {
+        None => println!("Invalid input number"),
+        Some(i) => match new_base { // Probably a better way to do this
+            Some(2) => println!("0b{:b}", i),
+            Some(8) => println!("0{:o}", i),
+            Some(16) => println!("0x{:x}", i),
+            Some(10) => println!("{}", i),
+            None => println!("{}", i), // can this be done on the same line?
+            Some(x) => println!("Invalid base input: {}", x),
+        }
+    }
+}
+
+fn help() {
+    println!("Usage: con input base");
+    println!("");
+    println!("For example con 0b11 16, which results in 0x3");
+    println!("Inputs are interpreted by their prefix so: 0b (binary), 0x (hex), 0 (octal) and either 0d or nothing for base 10");
+    println!("Available bases for formatting output are 2, 8, 10, 16");
 }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     let name = args.get(1);
     match args.get(1) { // 1 since the previous get consumed it
-        Some(num) => println!("{:?}", parse_num(num.to_string())),
-        None => println!("Incorrect usage, should be {:?} NUM", name),
+        Some(num) => if num == "help" || num == "--help" || num == "-h" { help(); }
+        else {
+            print_num(num.to_string(), args.get(2).cloned());
+        },
+        None => println!("Incorrect usage, should be {:?} NUM. Run 'con help'", name),
     }
 }
